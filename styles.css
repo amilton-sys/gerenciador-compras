@@ -1,0 +1,110 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    .flex {
+        display: flex;
+    }
+
+    .column {
+        flex-direction: column;
+    }
+
+    .center {
+        justify-content: center;
+        align-items: center;
+    }
+
+    .space-bet{
+        justify-content: space-between;
+    }
+
+    .gap-row{
+        row-gap: 5px;
+    }
+}
+
+.p-10 {
+    padding: 10px;
+}
+
+.text {
+    font-size: 24px;
+}
+
+.input {
+    height: 40px;
+    padding: 5px;
+    font-size: 24px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    outline: none;
+}
+
+.button {
+    height: 40px;
+    width: 150px;
+    font-size: 24px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f1f1f1;
+    transition: opacity .2s ease-in-out;
+}
+
+.button:active{
+    opacity: .3;
+}
+
+.fgrow-1{
+    flex-grow: 1;
+}
+
+.card {
+    width: 100%;
+    border: 1px solid #888;
+    border-radius: 8px;
+}
+
+.card {
+    width: 100%;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 10px;
+    position: relative; /* Mantém o botão posicionado dentro do card */
+    display: flex;
+    flex-direction: column;
+}
+
+.button.remover {
+    background-color: #ff4d4d;
+    color: white;
+    font-size: 18px;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end; /* Posiciona o botão no final à direita */
+    margin-top: 10px;
+}
+
+.button.remover:hover {
+    opacity: 0.8;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.erro {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+

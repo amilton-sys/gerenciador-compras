@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="./app.js" defer></script>
+</head>
+
+<body>
+    <main class="p-10">
+        <div class="flex center column p-10">
+            <label for="valorTotal" class="text">Total</label>
+            <h1 id="valorTotal">R$ 0,00</h1>
+        </div>
+
+        <div class="flex column p-10 gap-row">
+            <label for="nome" class="text">Digite o nome</label>
+            <input type="text" id="nome" class="input">
+        </div>
+
+        <div class="flex column p-10 gap-row">
+            <label for="quantidade" class="text">Digite quantidade</label>
+            <input type="text" id="quantidade" class="input">
+        </div>
+
+        <div class="flex column p-10 gap-row">
+            <label for="valorUnitario" class="text">Digite valor unitário</label>
+            <input type="text" id="valorUnitario" class="input">
+        </div>
+        <div class="flex space-bet p-10">
+            <button type="submit" class="button" id="cadastrar">Cadastrar</button>
+            <button type="reset" class="button" id="limpar">Limpar</button>
+        </div>
+
+        <ul>
+
+        </ul>
+    </main>
+</body>
+
+</html>
