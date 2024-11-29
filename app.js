@@ -37,16 +37,19 @@ function cadastrarProduto() {
     }
 
     // Valida o campo "quantidade"
-    if (!quantidade.value.trim() || isNaN(parseInt(quantidade.value))) {
-        mostrarErro(quantidade, 'Quantidade deve ser um número válido');
+    const quantidadeValor = parseFloat(quantidade.value);
+    if (!quantidade.value.trim() || isNaN(quantidadeValor) || quantidadeValor <= 0) {
+        mostrarErro(quantidade, 'Quantidade deve ser um número válido maior que zero');
         valido = false;
     } else {
         limparErro(quantidade);
     }
 
     // Valida o campo "valorUnitario"
-    if (!valorUnitario.value.trim() || isNaN(parseFloat(valorUnitario.value))) {
-        mostrarErro(valorUnitario, 'Valor unitário deve ser um número válido');
+    let valorUnitarioValor = valorUnitario.value.trim().replace(',', '.'); // Troca vírgula por ponto
+    valorUnitarioValor = parseFloat(valorUnitarioValor);
+    if (!valorUnitario.value.trim() || isNaN(valorUnitarioValor) || valorUnitarioValor <= 0) {
+        mostrarErro(valorUnitario, 'Valor unitário deve ser um número válido maior que zero');
         valido = false;
     } else {
         limparErro(valorUnitario);
@@ -54,12 +57,12 @@ function cadastrarProduto() {
 
     if (!valido) return;
 
-    // Cria o objeto do produto
+    // Cria o objeto do produto com parseFloat para garantir que a quantidade e valor unitário sejam tratados corretamente
     const produto = {
         nome: nome.value,
-        quantidade: parseInt(quantidade.value),
-        valorUnitario: parseFloat(valorUnitario.value),
-        total: parseInt(quantidade.value) * parseFloat(valorUnitario.value)
+        quantidade: quantidadeValor,
+        valorUnitario: valorUnitarioValor,
+        total: quantidadeValor * valorUnitarioValor // Calcula o total com precisão decimal
     };
 
     listaProdutos.push(produto);
@@ -95,7 +98,7 @@ function carregaProdutos() {
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Quantidade</label>
-                    <p class="text">${produto.quantidade}</p>
+                    <p class="text">${produto.quantidade}</p> <!-- Exibe a quantidade com 2 casas decimais -->
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Valor unitário</label>
@@ -103,7 +106,7 @@ function carregaProdutos() {
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Valor total</label>
-                    <p class="text">R$ ${produto.total.toFixed(2)}</p>
+                    <p class="text">R$ ${produto.total.toFixed(2)}</p> <!-- Exibe o total com 2 casas decimais -->
                 </div>
                 <button class="button remover" onclick="removerProduto(${index})">Remover</button>
             </div>
@@ -120,10 +123,9 @@ window.removerProduto = function(index) {
     carregaProdutos();
 };
 
-
 function calculaTotal() {
     const total = listaProdutos.reduce((soma, produto) => soma + produto.total, 0);
-    valorTotal.textContent = `R$ ${total.toFixed(2)}`;
+    valorTotal.textContent = `R$ ${total.toFixed(2)}`; // Exibe o total final com 2 casas decimais
 }
 
 cadastrar.addEventListener('click', cadastrarProduto);
