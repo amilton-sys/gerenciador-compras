@@ -4,6 +4,7 @@ const quantidade = document.querySelector("#quantidade");
 const valorUnitario = document.querySelector("#valorUnitario");
 const cadastrar = document.querySelector("#cadastrar");
 const limpar = document.querySelector('#limpar');
+const deleteTodos = document.querySelector('#deleteTodos');
 const listaProdutos = JSON.parse(localStorage.getItem('produtos')) || [];
 
 // Exibe ou atualiza a mensagem de erro
@@ -102,11 +103,11 @@ function carregaProdutos() {
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Valor unitário</label>
-                    <p class="text">R$ ${produto.valorUnitario.toFixed(2)}</p>
+                    <p class="text">R$ ${produto.valorUnitario.toFixed(2).replace('.', ',')}</p>
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Valor total</label>
-                    <p class="text">R$ ${produto.total.toFixed(2)}</p> <!-- Exibe o total com 2 casas decimais -->
+                    <p class="text">R$ ${produto.total.toFixed(2).replace('.', ',')}</p> <!-- Exibe o total com 2 casas decimais -->
                 </div>
                 <button class="button remover" onclick="removerProduto(${index})">Remover</button>
             </div>
@@ -125,9 +126,15 @@ window.removerProduto = function(index) {
 
 function calculaTotal() {
     const total = listaProdutos.reduce((soma, produto) => soma + produto.total, 0);
-    valorTotal.textContent = `R$ ${total.toFixed(2)}`; // Exibe o total final com 2 casas decimais
+    valorTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`; // Exibe o total final com 2 casas decimais
+}
+
+function deletarTodos(){
+    localStorage.clear();
+    window.location.reload(true);
 }
 
 cadastrar.addEventListener('click', cadastrarProduto);
 limpar.addEventListener('click', limparCampos);
 document.addEventListener('DOMContentLoaded', carregaProdutos);
+deleteTodos.addEventListener('click', deletarTodos);
