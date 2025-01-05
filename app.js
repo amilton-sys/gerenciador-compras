@@ -1,140 +1,142 @@
-const valorTotal = document.querySelector("#valorTotal");
-const nome = document.querySelector("#nome");
-const quantidade = document.querySelector("#quantidade");
-const valorUnitario = document.querySelector("#valorUnitario");
-const cadastrar = document.querySelector("#cadastrar");
-const limpar = document.querySelector('#limpar');
-const deleteTodos = document.querySelector('#deleteTodos');
-const listaProdutos = JSON.parse(localStorage.getItem('produtos')) || [];
+import { Product } from "./Product.js";
+import { ProductService } from "./ProductService.js";
+import { Validator } from "./Validator.js";
 
-// Exibe ou atualiza a mensagem de erro
-function mostrarErro(campo, mensagem) {
-    let erro = campo.nextElementSibling;
-    if (!erro || !erro.classList.contains('erro')) {
-        erro = document.createElement('p');
-        erro.classList.add('erro');
-        campo.parentNode.appendChild(erro);
-    }
-    erro.textContent = mensagem;
+// Elementos do DOM
+const elements = {
+    nome: document.querySelector("#nome"),
+    quantidade: document.querySelector("#quantidade"),
+    valorUnitario: document.querySelector("#valorUnitario"),
+    cadastrar: document.querySelector("#cadastrar"),
+    limpar: document.querySelector("#limpar"),
+    deleteTodos: document.querySelector("#deleteTodos"),
+    ul: document.querySelector("ul"),
+    valorTotal: document.querySelector("#valorTotal"),
+};
+
+// Serviço de produtos
+const productService = new ProductService();
+let isEditing = false; // Flag para controle do estado de edição
+let currentProductId = null;
+
+// Utilitários
+const formatCurrency = value => `R$ ${value.toFixed(2).replace(".", ",")}`;
+const clearFields = () => Object.values(elements).forEach(el => el.tagName === "INPUT" && (el.value = ""));
+const generateId = () => Math.random().toString(36).substring(2, 9);
+
+// Atualizar total
+function updateTotal() {
+    const total = productService.products.reduce((sum, product) => sum + product.total, 0);
+    elements.valorTotal.textContent = formatCurrency(total);
 }
 
-// Remove a mensagem de erro
-function limparErro(campo) {
-    const erro = campo.nextElementSibling;
-    if (erro && erro.classList.contains('erro')) {
-        erro.textContent = '';
-    }
-}
-
-function cadastrarProduto() {
-    let valido = true;
-
-    // Valida o campo "nome"
-    if (!nome.value.trim()) {
-        mostrarErro(nome, 'Nome é obrigatório');
-        valido = false;
-    } else {
-        limparErro(nome);
-    }
-
-    // Valida o campo "quantidade"
-    const quantidadeValor = parseFloat(quantidade.value);
-    if (!quantidade.value.trim() || isNaN(quantidadeValor) || quantidadeValor <= 0) {
-        mostrarErro(quantidade, 'Quantidade deve ser um número válido maior que zero');
-        valido = false;
-    } else {
-        limparErro(quantidade);
-    }
-
-    // Valida o campo "valorUnitario"
-    let valorUnitarioValor = valorUnitario.value.trim().replace(',', '.'); // Troca vírgula por ponto
-    valorUnitarioValor = parseFloat(valorUnitarioValor);
-    if (!valorUnitario.value.trim() || isNaN(valorUnitarioValor) || valorUnitarioValor <= 0) {
-        mostrarErro(valorUnitario, 'Valor unitário deve ser um número válido maior que zero');
-        valido = false;
-    } else {
-        limparErro(valorUnitario);
-    }
-
-    if (!valido) return;
-
-    // Cria o objeto do produto com parseFloat para garantir que a quantidade e valor unitário sejam tratados corretamente
-    const produto = {
-        nome: nome.value,
-        quantidade: quantidadeValor,
-        valorUnitario: valorUnitarioValor,
-        total: quantidadeValor * valorUnitarioValor // Calcula o total com precisão decimal
-    };
-
-    listaProdutos.push(produto);
-    atualizarLocalStorage();
-    limparCampos();
-    carregaProdutos();
-}
-
-// Atualiza o localStorage
-function atualizarLocalStorage() {
-    localStorage.setItem('produtos', JSON.stringify(listaProdutos));
-}
-
-// Limpa os campos do formulário
-function limparCampos() {
-    nome.value = '';
-    quantidade.value = '';
-    valorUnitario.value = '';
-}
-
-function carregaProdutos() {
-    const ul = document.querySelector('ul');
-    ul.innerHTML = '';
-    listaProdutos.forEach((produto, index) => {
-        const li = document.createElement('li');
-        li.classList.add('flex', 'center', 'p-10');
-
+// Renderizar produtos
+function renderProducts() {
+    elements.ul.innerHTML = "";
+    productService.products.forEach(product => {
+        const li = document.createElement("li");
+        li.classList.add("flex", "center", "p-10");
         li.innerHTML = `
             <div class="card flex column p-10 gap-row">
                 <div class="flex">
                     <label class="text fgrow-1">Nome</label>
-                    <p class="text">${produto.nome}</p>
+                    <p class="text">${product.name}</p>
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Quantidade</label>
-                    <p class="text">${produto.quantidade}</p> <!-- Exibe a quantidade com 2 casas decimais -->
+                    <p class="text">${product.quantity}</p>
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Valor unitário</label>
-                    <p class="text">R$ ${produto.valorUnitario.toFixed(2).replace('.', ',')}</p>
+                    <p class="text">${formatCurrency(product.unitPrice)}</p>
                 </div>
                 <div class="flex">
                     <label class="text fgrow-1">Valor total</label>
-                    <p class="text">R$ ${produto.total.toFixed(2).replace('.', ',')}</p> <!-- Exibe o total com 2 casas decimais -->
+                    <p class="text">${formatCurrency(product.total)}</p>
                 </div>
-                <button class="button remover" onclick="removerProduto(${index})">Remover</button>
+                <div class="flex space-bet">
+                    <button class="button editar" data-id="${product.id}">Editar</button>
+                    <button class="button remover" data-id="${product.id}">Remover</button>
+                </div>
             </div>
         `;
-        ul.appendChild(li);
+        elements.ul.appendChild(li);
     });
-    calculaTotal();
+    updateTotal();
 }
 
-// Torna removerProduto disponível globalmente
-window.removerProduto = function(index) {
-    listaProdutos.splice(index, 1);
-    atualizarLocalStorage();
-    carregaProdutos();
-};
+// Processar cadastro ou edição
+function handleCadastro() {
+    if (!Validator.validateFields([
+        { field: elements.nome, message: "Nome é obrigatório" },
+        { field: elements.quantidade, message: "Quantidade é obrigatória" },
+        { field: elements.valorUnitario, message: "Valor unitário é obrigatório" },
+    ])) return;
 
-function calculaTotal() {
-    const total = listaProdutos.reduce((soma, produto) => soma + produto.total, 0);
-    valorTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`; // Exibe o total final com 2 casas decimais
+    const newProduct = new Product(
+        currentProductId || generateId(),
+        elements.nome.value,
+        parseFloat(elements.quantidade.value),
+        parseFloat(elements.valorUnitario.value.replace(",", "."))
+    );
+
+    if (isEditing) {
+        productService.updateProduct(currentProductId, newProduct);
+        isEditing = false;
+        currentProductId = null;
+        elements.cadastrar.textContent = "Cadastrar";
+    } else {
+        productService.addProduct(newProduct);
+    }
+
+    clearFields();
+    renderProducts();
 }
 
-function deletarTodos(){
-    localStorage.clear();
-    window.location.reload(true);
+// Lidar com eventos no UL
+function handleUlClick(event) {
+    const id = event.target.dataset.id;
+    if (!id) return;
+    if (event.target.classList.contains("remover")) {
+        productService.deleteProduct(id);
+        renderProducts();
+    } else if (event.target.classList.contains("editar")) {
+        const product = productService.products.find(p => p.id === id);
+        if (product) {
+            elements.nome.value = product.name;
+            elements.quantidade.value = product.quantity;
+            elements.valorUnitario.value = product.unitPrice.toString().replace(".", ",");
+            isEditing = true;
+            currentProductId = id;
+            elements.cadastrar.textContent = "Salvar";
+        }
+    }
 }
 
-cadastrar.addEventListener('click', cadastrarProduto);
-limpar.addEventListener('click', limparCampos);
-document.addEventListener('DOMContentLoaded', carregaProdutos);
-deleteTodos.addEventListener('click', deletarTodos);
+// Eventos principais
+elements.cadastrar.addEventListener("click", handleCadastro);
+elements.limpar.addEventListener("click", clearFields);
+elements.deleteTodos.addEventListener("click", () => {
+    productService.clearAll();
+    renderProducts();
+});
+elements.ul.addEventListener("click", handleUlClick);
+document.addEventListener("DOMContentLoaded", renderProducts);
+
+
+
+// Evita abrir o devtools
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "F12" || event.key === "I" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        window.location.href = "https://www.google.com";
+    }
+});
+
+
+
+

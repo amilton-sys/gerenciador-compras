@@ -25,11 +25,13 @@
     .gap-row{
         row-gap: 5px;
     }
+
+    .p-10 {
+        padding: 10px;
+    }
 }
 
-.p-10 {
-    padding: 10px;
-}
+
 
 .text {
     font-size: 24px;
@@ -46,8 +48,8 @@
 
 .button {
     height: 40px;
-    width: 150px;
-    font-size: 24px;
+    width: 120px;
+    font-size: 20px;
     border-radius: 8px;
     border: none;
     background-color: #f1f1f1;
@@ -73,7 +75,7 @@
     border: 1px solid #888;
     border-radius: 8px;
     padding: 10px;
-    position: relative; /* Mantém o botão posicionado dentro do card */
+    position: relative; 
     display: flex;
     flex-direction: column;
 }
@@ -86,7 +88,19 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    align-self: flex-end; /* Posiciona o botão no final à direita */
+    align-self: flex-end; 
+    margin-top: 10px;
+}
+
+.button.editar {
+    background-color: #888;
+    color: white;
+    font-size: 18px;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start; 
     margin-top: 10px;
 }
 
