@@ -35,29 +35,33 @@ function renderProducts() {
     elements.ul.innerHTML = "";
     productService.products.forEach(product => {
         const li = document.createElement("li");
-        li.classList.add("flex", "center", "p-10");
         li.innerHTML = `
-            <div class="card flex column p-10 gap-row">
-                <div class="flex">
-                    <label class="text fgrow-1">Nome</label>
-                    <p class="text">${product.name}</p>
-                </div>
-                <div class="flex">
-                    <label class="text fgrow-1">Quantidade</label>
-                    <p class="text">${product.quantity}</p>
-                </div>
-                <div class="flex">
-                    <label class="text fgrow-1">Valor unitário</label>
-                    <p class="text">${formatCurrency(product.unitPrice)}</p>
-                </div>
-                <div class="flex">
-                    <label class="text fgrow-1">Valor total</label>
-                    <p class="text">${formatCurrency(product.total)}</p>
-                </div>
-                <div class="flex space-bet">
-                    <button class="button editar" data-id="${product.id}">Editar</button>
-                    <button class="button remover" data-id="${product.id}">Remover</button>
-                </div>
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-label fs-3">Nome</label>
+                            <p class="fs-4">${product.name}</p>
+                        </div>
+                        <div class="col">
+                            <label class="fs-3">Quantidade</label>
+                            <p class="fs-4">${product.quantity}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                       <div class="col">
+                            <label class="fs-3">Valor unitário</label>
+                            <p class="fs-4">${formatCurrency(product.unitPrice)}</p>
+                        </div>
+                        <div class="col">
+                            <label class="fs-3">Valor total</label>
+                            <p class="fs-4">${formatCurrency(product.total)}</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                            <button class="btn btn-primary fs-5 editar" data-id="${product.id}">Editar</button>
+                            <button class="btn btn-danger fs-5 remover" data-id="${product.id}">Remover</button>
+                    </div>
             </div>
         `;
         elements.ul.appendChild(li);
@@ -120,22 +124,11 @@ elements.deleteTodos.addEventListener("click", () => {
     productService.clearAll();
     renderProducts();
 });
+
 elements.ul.addEventListener("click", handleUlClick);
+
 document.addEventListener("DOMContentLoaded", renderProducts);
 
-
-
-// Evita abrir o devtools
-document.addEventListener('contextmenu', function(event) {
-    event.preventDefault();
-});
-
-document.addEventListener("keydown", function(event) {
-    if (event.key === "F12" || event.key === "I" && (event.ctrlKey || event.metaKey)) {
-        event.preventDefault();
-        window.location.href = "https://www.google.com";
-    }
-});
 
 
 
